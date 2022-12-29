@@ -48,18 +48,25 @@ function get_target_host_uri_audience(uri)
     url_components = tokenise_url(uri)
     target_host = url_components[2]
     target_uri = ""
+
+    -- every thing after /proxy/<host> is the target uri
     for i = 3, #url_components, 1 do
         target_uri = target_uri.."/"..url_components[i]
     end
     if uri[#uri] == "/" then
         target_uri = target_uri.."/"
     end
+
+    --- the first part of the domain or the service name is considered as the audience.
+    --- this might not always be true but this is the convention we are following here.
     asap_audience = string.sub(target_host, 0, string.find(target_host, "%.")-1)
 
     return {target_host=target_host, target_uri=target_uri, asap_audience=asap_audience}
 
 end
 
+
+--@function set the asap header, the target host var got proxy pass and the target uri
 function _M.setup_asap()
     r = get_target_host_uri_audience(ngx.var.request_uri)
     response = generate_asap_token(r.asap_audience)
@@ -68,10 +75,17 @@ function _M.setup_asap()
         ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
     end
     jwt_token = response.response
+
+    -- this is important! When reading from stdout the last character we get is %0A. We
+    -- need to get rid of this, hence we we omit the last character.
     jwt_token = string.sub(jwt_token, 1, #jwt_token - 1)
     ngx.req.set_header("Authorization", jwt_token)
 
     ngx.var.target_host = r.target_host
+
+    -- if our uri has url params, we need to get rid of those. Since we are doing a proxy_pass,
+    -- nginx will automatically forward the url params as well. Setting the uri with url params
+    -- will result in adding url params twice like /endpoint?param=1?param=1 which we dont want.
     if string.find(r.target_uri, "%?") ~= nil then
         target_uri_without_args = string.sub(r.target_uri, 1, string.find(r.target_uri, "%?")-1)
     else

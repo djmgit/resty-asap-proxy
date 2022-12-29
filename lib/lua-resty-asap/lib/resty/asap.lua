@@ -7,6 +7,10 @@ local str_const = {
     asap_private_key = "ASAP_PRIVATE_KEY"
 }
 
+
+--@function tokensie a uri into components, split by /
+--@param uri string the uri to tokenise
+--@return table[strings] list of components
 function tokenise_url(uri)
     url_components = {}
     for elem in string.gmatch(uri, "([^/]+)") do
@@ -15,11 +19,16 @@ function tokenise_url(uri)
     return url_components
 end
 
+
+--@function generate and return asap token
+--@param asap_audience string audience to use for the asap request
+--return Table[string,string] Table containg asap token as response else stderr as error and status, reason.
 function generate_asap_token(asap_audience)
     local asap_issuer = os.getenv(str_const.asap_issuer)
     local asap_private_key = os.getenv(str_const.asap_private_key)
     stdin = asap_issuer.." "..asap_private_key.." "..asap_audience
     
+    -- use shell module to invoke python script. This is non-blocking IO
     local ok, stdout, stderr, reason, status = shell.run([[python3 lib/lua-resty-asap/lib/python/script.py]], stdin)
     
     if not ok then
@@ -28,6 +37,13 @@ function generate_asap_token(asap_audience)
     return {response=stdout, status=status}
 end
 
+
+--@function get target host, the target uri and audience from the host
+--          for example if the uri is /proxy/myapi.app.net/api/user/1 then
+--          the target host is myapi.app.net, target uri is /api/user/1
+--          and audience is myapi
+--@param uri string the complete request uri
+--return table(string,string) table container target_host, target_uri, asap_audience
 function get_target_host_uri_audience(uri)
     url_components = tokenise_url(uri)
     target_host = url_components[2]

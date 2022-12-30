@@ -57,8 +57,10 @@ not be much different.
 The proxy server expects you to send requests in a specific format. This format makes sure that the proxy is able to extract target service host, the
 target uri and the desired asap issuer form the request itself and generate the asap token.
 The request format is -
-http://127.0.0.1:8080/**proxy**/**upstream_service_host**/remaining_uri
-In short the uri should begin with /proxy then the upstream service host (fqdn) then the uri for the upstream host and url params if any.
+
+```http://127.0.0.1:8080/proxy/upstream_service_host/remaining_uri```
+
+In short the uri should begin with **/proxy** then the upstream service host (fqdn) then the uri for the upstream host and url params if any.
 
 Exmaple:
 ```http://127.0.0.1:8080/proxy/myservice.mycompany.com/api/home/1```

@@ -68,8 +68,8 @@ Exmaple:
 ```http://127.0.0.1:8080/proxy/myservice.mycompany.com/api/home/1```
 
 If we use the above request url, resty-asap-proxy will use myservice.mycompany.com as the upstream service host, /api/home/1 as the target uri and
-asap_issuer as ```myservice``` that is the frist part of the domain or the service name. So basically the proxy will initiate a new request to
-```https://myservice.mycompany.com/api/home/1```.
+asap audience as ```myservice``` that is the frist part of the domain or the service name. So basically the proxy will initiate a new request to
+```https://myservice.mycompany.com/api/home/1``` with the generated asap token in header.
 
 ## How does resty-asap-proxy work?
 
@@ -79,12 +79,12 @@ Request flow:
 
 I will use the request url ```http://127.0.0.1:8080/proxy/myservice.mycompany.com/api/home/1``` for running through the request flow.
 
-- One receive the request, resty-asap-proxy will execute the lua-resty-asap module lua script.
+- On receiving the request, resty-asap-proxy will execute the lua-resty-asap module lua script by calling the desired module function.
 
 - The lua script will capture the request_uri and will extract the following things from it:
     - the upstream service host name - myservice.mycompany.com
     - The upstream service uri - /api/home/1
-    - The asap issuer which is basically the first part of the host name (pqdn) as of now - myservice
+    - The asap audience which is basically the first part of the host name (pqdn) as of now - myservice
 
 - The lua script then invokes a python script which uses ```asap-authentication-python``` library to generate the asap token. The required asap private
   key, asap issuer and audience is passed to the py script from lua via stdin. The lua script itself gets the asap issuer and asap private key from env
@@ -94,7 +94,7 @@ I will use the request url ```http://127.0.0.1:8080/proxy/myservice.mycompany.co
 
 - The lua script reads the asap token from the stdout and injects it as the ```Authorization``` header in the request.
 
-- It is to be noted that lua module uses the shell module provided by openresty to invoke the py script via non blocking IO.
+- It is to be noted that the lua-resty-asap lua module uses the shell module provided by openresty to invoke the py script via non blocking IO.
 
 - Next the lua script populates the predefined nginx var ```target_host``` with the extracted upstream service host name. This var is used by
   proxy_pass as the remote host. This is how we are able to dynamically decide the upstream service host per request on the fly. The target
@@ -102,4 +102,17 @@ I will use the request url ```http://127.0.0.1:8080/proxy/myservice.mycompany.co
   
 - Lastly the lua module sets the uri to the extracted target uri - ```/api/home/1```
 
-- Nginx finally will forward the request with proper uri to the desired target host via proxy_pass.
+- Nginx finally will forward the request with proper uri to the desired target host via proxy_pass. The final outgoing request will be
+  ```https://myservice.mycompany.com/api/home/1```
+
+
+## NOTES
+
+- The lua-resty-asap module can be extracted from this repo and used with any openresty configuration.
+
+- Right now the proxy considers the upstream service name as the asap audience. The proxy needs a way to override this.
+
+- It always assumes the upstream service is behind tls.
+
+- The nginx conf is very minimalistic, it does use service names etc. Thats done intentionally, please edit the conf as required. My primary focus
+  was the lua module.

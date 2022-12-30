@@ -67,3 +67,7 @@ Exmaple:
 
 If we use the above request url, resty-asap-proxy will use myservice.mycompany.com as the upstream service host, /api/home/1 as the target uri and
 asap_issuer as ```myservice``` that is the frist part of the domain or the service name.
+
+## How does resty-asap-proxy work?
+
+Request flow:

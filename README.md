@@ -71,3 +71,5 @@ asap_issuer as ```myservice``` that is the frist part of the domain or the servi
 ## How does resty-asap-proxy work?
 
 Request flow:
+
+![Unable to load request flow image](resources/resty-asap.jpg?raw=true "Request flow")

@@ -37,3 +37,17 @@ not be much different.
   
 - Now you can run the server using ```openresty -p `pwd`/ -c conf/nginx.conf```. Additionally you can do a ```tail -f logs/http.log``` to keep
   a watch on the logs.
+  
+- The proxy should be running on port 8080.
+
+### Running via Docker
+
+- Make sure you have Docker installed on your system.
+
+- Clone this repo and open it in your terminal.
+
+- Build the docker image using ```docker build -t resty-asap-proxy:v1 .```
+
+- Create and run the container using ```docker run -p 8080:8080 -e ASAP_ISSUER=<asap issuer> -e ASAP_PRIVATE_KEY=<asap private key> resty-asap-proxy:v1```
+
+- The proxy should be runing on port 8080. The access and error logs will be streamed to stdout.

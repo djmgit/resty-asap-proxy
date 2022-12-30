@@ -85,3 +85,19 @@ I will use the request url ```http://127.0.0.1:8080/proxy/myservice.mycompany.co
     - the upstream service host name - myservice.mycompany.com
     - The upstream service uri - /api/home/1
     - The asap issuer which is basically the first part of the host name (pqdn) as of now - myservice
+
+- The lua script then invokes a python script which uses ```asap-authentication-python``` library to generate the asap token. The required asap private
+  key, asap issuer and audience is passed to the py script from lua via stdin. The lua script itself gets the asap issuer and asap private key from env
+  vars.
+ 
+- The py script sends the generated asap token to stdout.
+
+- The lua script reads the asap token from the stdout and injects it as the ```Authorization``` header in the request.
+
+- It is to be noted that lua module uses the shell module provided by openresty to invoke the py script via non blocking IO.
+
+- Next the lua script populates the predefined nginx var ```target_host``` with the extracted upstream service host name. This var is used by
+  proxy_pass as the remote host. This is how we are able to dynamically decide the upstream service host per request on the fly. The target
+  service can be anything and the request will be accordingly proxied with correct asap token.
+  
+- Lastly the lua module will set the uri to the extarcted target uri - ```/api/home/1```

@@ -68,10 +68,13 @@ Exmaple:
 ```http://127.0.0.1:8080/proxy/myservice.mycompany.com/api/home/1```
 
 If we use the above request url, resty-asap-proxy will use myservice.mycompany.com as the upstream service host, /api/home/1 as the target uri and
-asap_issuer as ```myservice``` that is the frist part of the domain or the service name.
+asap_issuer as ```myservice``` that is the frist part of the domain or the service name. So basically the proxy will initiate a new request to
+```https://myservice.mycompany.com/api/home/1```.
 
 ## How does resty-asap-proxy work?
 
 Request flow:
 
 ![Unable to load request flow image](resources/resty-asap.jpg?raw=true "Request flow")
+
+I will use the request url ```http://127.0.0.1:8080/proxy/myservice.mycompany.com/api/home/1``` for running through the request flow.

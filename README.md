@@ -100,4 +100,6 @@ I will use the request url ```http://127.0.0.1:8080/proxy/myservice.mycompany.co
   proxy_pass as the remote host. This is how we are able to dynamically decide the upstream service host per request on the fly. The target
   service can be anything and the request will be accordingly proxied with correct asap token.
   
-- Lastly the lua module will set the uri to the extarcted target uri - ```/api/home/1```
+- Lastly the lua module sets the uri to the extracted target uri - ```/api/home/1```
+
+- Nginx finally will forward the request with proper uri to the desired target host via proxy_pass.

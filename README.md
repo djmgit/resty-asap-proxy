@@ -114,5 +114,5 @@ I will use the request url ```http://127.0.0.1:8080/proxy/myservice.mycompany.co
 
 - It always assumes the upstream service is behind tls.
 
-- The nginx conf is very minimalistic, it does use service names etc. Thats done intentionally, please edit the conf as required. My primary focus
+- The nginx conf is very minimalistic, it does not use server names etc. Thats done intentionally, please edit the conf as required. My primary focus
   was the lua module.

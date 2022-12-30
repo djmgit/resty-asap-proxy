@@ -78,3 +78,10 @@ Request flow:
 ![Unable to load request flow image](resources/resty-asap.jpg?raw=true "Request flow")
 
 I will use the request url ```http://127.0.0.1:8080/proxy/myservice.mycompany.com/api/home/1``` for running through the request flow.
+
+- One receive the request, resty-asap-proxy will execute the lua-resty-asap module lua script.
+
+- The lua script will capture the request_uri and will extract the following things from it:
+    - the upstream service host name - myservice.mycompany.com
+    - The upstream service uri - /api/home/1
+    - The asap issuer which is basically the first part of the host name (pqdn) as of now - myservice

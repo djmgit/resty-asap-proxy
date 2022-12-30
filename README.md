@@ -20,7 +20,9 @@ nginx out of the box. You can find more about it <a href="https://openresty.org/
 
 resty-asap-proxy can be run directly on your system using openresty or via docker. I assume that you have already generated your asap keys. The public
 key has been uploaded to the key server and the key and issuer is trusted by the upstream service. The private key will be used by the proxy
-server to auth with the upstream service. Also the instructions are for Linux and MacOS, I have not tried running it on Windows, but it should
+server to auth with the upstream service. The proxy assumes that the upstream server uses tls and uses [https] to forward. This can be changed in
+the conf file.
+Also the instructions are for Linux and MacOS, I have not tried running it on Windows, but it should
 not be much different.
 
 ### Running resty-asap-proxy on system without docker

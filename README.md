@@ -51,3 +51,17 @@ not be much different.
 - Create and run the container using ```docker run -p 8080:8080 -e ASAP_ISSUER=<asap issuer> -e ASAP_PRIVATE_KEY=<asap private key> resty-asap-proxy:v1```
 
 - The proxy should be runing on port 8080. The access and error logs will be streamed to stdout.
+
+## Sending requests to upstream services using resty-asap-proxy
+
+The proxy server expects you to send requests in a specific format. This format makes sure that the proxy is able to extract target service host, the
+target uri and the desired asap issuer form the request itself and generate the asap token.
+The request format is -
+http://127.0.0.1:8080/**proxy**/**upstream_service_host**/remaining_uri
+In short the uri should begin with /proxy then the upstream service host (fqdn) then the uri for the upstream host and url params if any.
+
+Exmaple:
+```http://127.0.0.1:8080/proxy/myservice.mycompany.com/api/home/1```
+
+If we use the above request url, resty-asap-proxy will use myservice.mycompany.com as the upstream service host, /api/home/1 as the target uri and
+asap_issuer as ```myservice``` that is the frist part of the domain or the service name.
